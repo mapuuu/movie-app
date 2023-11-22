@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { FaHeart, FaSearch } from 'react-icons/fa';
 import { CgUser } from 'react-icons/cg';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { Hint } from 'react-autocomplete-hint';
+import SearchResults from './SearchResults';
 
 const Navbar = () => {
   const [search, setSearch] = useState('');
@@ -21,6 +24,38 @@ const Navbar = () => {
       navigate(`/movies`);
     }
   };
+
+  const [searchResults, setSearchResults] = useState([]);
+  const [firstProductNameArray, setFirstProductNameArray] = useState([]);
+
+  useEffect(() => {
+    if (!search) {
+      setSearchResults([]);
+    } else {
+      (async () => {
+        const url = 'http://localhost:4000/api/movies/search';
+        // const url = 'http://localhost:8080/search';
+
+        try {
+          const response = await axios.get(url, {
+            params: {
+              name: search,
+            }
+          });
+
+          setSearchResults(response.data);
+
+          if (response.data.length > 0) {
+            const firstProductName = response.data[0].name;
+            console.log(response.data[0]._id)
+            setFirstProductNameArray([firstProductName]);
+          }
+        } catch (error) {
+          console.error('Error fetching search results:', error);
+        }
+      })();
+    }
+  }, [search]);
 
   return (
     <>
@@ -48,13 +83,33 @@ const Navbar = () => {
               >
                 <FaSearch />
               </button>
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search your movies favorite"
-                className="font-medium placeholder:text-border text-sm w-11/12 h-12 bg-transparent border-none  px-2 text-black"
-              />
+              <div style={{
+                flexDirection: 'column', // Hiển thị các phần tử thẳng hàng
+                width: '600px'
+              }}
+                className="flex flex-col rounded-lg overflow-hidden shadow-lg max-w-600px w-90 mt-1rem mx-auto">
+
+                {search && (
+                  <div className="max-h-75vh p-0 overflow-y-auto absolute top-[90px] z-5 bg-rose-200 rounded-lg">
+                    <div className="px-4 ">
+                      <ul className="border-t-1 border-gray-300 pt-2 pb-4 ">
+                        <SearchResults searchResults={searchResults} />
+                      </ul>
+                    </div>
+                  </div>
+                )}
+                <div className='w-[565px]'>
+                  <Hint options={firstProductNameArray}>
+                    <input
+                      type="search"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Search your movies favorite"
+                      className="font-medium placeholder:text-border text-sm w-11/12 h-12 bg-transparent border-none  px-2 text-black"
+                    />
+                  </Hint>
+                </div>
+              </div>
             </form>
           </div>
           {/* Menu */}
@@ -73,8 +128,8 @@ const Navbar = () => {
                 userInfo?.isAdmin
                   ? '/dashboard'
                   : userInfo
-                  ? '/profile'
-                  : '/login'
+                    ? '/profile'
+                    : '/login'
               }
               className={Hover}
             >

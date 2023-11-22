@@ -74,7 +74,7 @@ const Filter = (props) => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-800 text-dryGray rounded-md shadow-lg max-h-60" style={{ overflow: 'auto' }}>
+              <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-800 text-dryGray rounded-md shadow-lg max-h-60">
                 {item.items.map((iterm, i) => (
                   <Listbox.Option
                     key={i}

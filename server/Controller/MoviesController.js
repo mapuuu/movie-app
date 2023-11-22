@@ -8,6 +8,51 @@ const importMovies = asyncHandler(async (req, res) => {
   res.status(201).json(movies);
 });
 
+//search
+const searchMovies = asyncHandler(async (req, res) => {
+  try {
+    const { name } = req.query;
+    console.log(name)
+    const agg = [
+      {
+        $match: {
+          name: {
+            $regex: `^${name}`, // Tìm kiếm các tài liệu có tên chứa 'name'
+            $options: 'i', // 'i' để không phân biệt chữ hoa/chữ thường
+          },
+        },
+      },
+      {
+        $sort: {
+          numberOfRevies: -1,
+          rate: -1,
+          // Sắp xếp theo trường price giảm dần (từ cao đến thấp)
+        },
+      },
+      {
+        $limit: 10,
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          numberOfRevies: 1,
+          rate: 1,
+          titleImage: 1,
+        },
+      },
+    ];
+
+    const response = await Movie.aggregate(agg);
+
+    console.log(response);
+    return res.json(response);
+  } catch (error) {
+    console.log(error);
+    return res.json();
+  }
+});
+
 const getMovies = asyncHandler(async (req, res) => {
   try {
     const { category, time, language, rate, year, search } = req.query;
@@ -114,7 +159,7 @@ const createMovieReview = asyncHandler(async (req, res) => {
 
 // ADMIN CONTROLLER
 try {
-} catch (error) {}
+} catch (error) { }
 const updateMovie = asyncHandler(async (req, res) => {
   try {
     const {
@@ -222,4 +267,5 @@ export {
   deleteMovie,
   deleteAllMovie,
   createMovie,
+  searchMovies,
 };
