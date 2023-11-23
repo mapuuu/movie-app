@@ -1,37 +1,40 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
-const SearchResults = ({ searchResults, setQueryText }) => {
-
-    // const handleResultClick = (name) => {
-    //     setQueryText(name); // Cập nhật giá trị trong input
-    // };
+const SearchResults = ({ searchResults, handleResultClick }) => {
 
     return (
         <div>
             {searchResults.length === 0 ? (
                 <p className="p-1">No search results found.</p>
             ) : (
-                searchResults.map(({ _id, name, numberOfRevies, rate }) => (
+                searchResults.map(({ _id, name, titleImage,numberOfRevies, rate }) => (
+                    <Link to={`/movie/${_id}`} className="w-full">
                     <div
                         style={{
-                            gridTemplateColumns: '6fr',
-                            gridColumnGap: '1rem',
-                            // height: '70px',
-                            overflow: 'hidden',
-                            width: '535px',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: '1rem',
+                            width: '596px',
                         }}
                         key={_id}
-                        className="p-2 rounded-lg hover:bg-teal-500 hover:text-white cursor-pointer"
+                        className="p-2 rounded-lg hover:bg-subMain hover:text-white cursor-pointer grid gap-4"
+                        onClick={() => handleResultClick(_id)}
                     >
+                        <div>
+                            <img src={titleImage} style={{width: "100%", height: "80px", objectFit: 'cover'}}/>
+                        </div>
                         <div align='start'>
-                            {/* <Link to={`/product_detail/${_id}`}> */}
+                            
 
                             <p>{name}</p>
-                            {/* <p>{numberOfRevies}</p> */}
-                            <p>{rate}</p>
-                            {/* </Link> */}
+                            <p>Rate: {rate}</p>
+                            <p>Total review: {numberOfRevies}</p>
+                            
                         </div>
                     </div>
+                    </Link>
                 ))
             )}
         </div>

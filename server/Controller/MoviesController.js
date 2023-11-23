@@ -12,7 +12,6 @@ const importMovies = asyncHandler(async (req, res) => {
 const searchMovies = asyncHandler(async (req, res) => {
   try {
     const { name } = req.query;
-    console.log(name)
     const agg = [
       {
         $match: {
@@ -30,7 +29,7 @@ const searchMovies = asyncHandler(async (req, res) => {
         },
       },
       {
-        $limit: 10,
+        $limit: 6,
       },
       {
         $project: {
@@ -45,7 +44,7 @@ const searchMovies = asyncHandler(async (req, res) => {
 
     const response = await Movie.aggregate(agg);
 
-    console.log(response);
+    // console.log(response);
     return res.json(response);
   } catch (error) {
     console.log(error);

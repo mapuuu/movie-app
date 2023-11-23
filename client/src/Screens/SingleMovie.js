@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Layout from '../Layout/Layout';
 import { Movies } from '../Data/DataMovies';
@@ -13,6 +13,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getMovieByMovieIdAction } from '../Redux/Actions/MoviesActions';
 import Loader from '../Components/Notfications/Loader';
 import { RiMovie2Line } from 'react-icons/ri';
+import Recommed from '../Components/Home/Recommed';
+import axios from 'axios';
 
 const SingleMovie = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -32,6 +34,39 @@ const SingleMovie = () => {
     // movie id
     dispatch(getMovieByMovieIdAction(id));
   }, [dispatch, id]);
+
+  const [recomend, setRecommend] = useState([]);
+  const effectRan = useRef(false)
+  useEffect(() => {
+    // if (effectRan.current === false) {
+    const fetchRecommend = async () => {
+      dispatch({ type: 'FETCH_REQUEST' });
+      try {
+        const data = { obj_id: id };
+        const res = await axios.post(`http://localhost:5000/receive`, data, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        dispatch({ type: 'FETCH_SUCCESS', payload: res.data });
+        setRecommend(res.data);
+      } catch (error) {
+        dispatch({ type: 'FETCH_FAIL', payload: error.message });
+        console.error('Error fetching recommendations:', error);
+      }
+    }
+    fetchRecommend();
+    return () => {
+      effectRan.current = true;
+    }
+  }
+    // }
+    , [id]);
+
+  console.log(recomend)
+  if (!recomend) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <Layout>
@@ -59,11 +94,11 @@ const SingleMovie = () => {
             {/* rate */}
             <MovieRate movie={movie} />
             {/*  */}
-            {RelatedMovies?.length > 0 && (
+            {recomend?.length > 0 && (
               <div className="my-16">
                 <Titles title="Related Movies" Icon={BsCollectionFill} />
                 <div className="grid sm:mt-10 mt-6 xl:grid:cols-4 2xl:grid-cols-5 lg:grid-cols-3 sm:grid-cols-2 gap-6">
-                  {RelatedMovies?.map((movie) => (
+                  {recomend?.map((movie) => (
                     <Movie key={movie?._id} movie={movie} />
                   ))}
                 </div>

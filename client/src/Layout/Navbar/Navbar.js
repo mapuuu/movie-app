@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { FaHeart, FaSearch } from 'react-icons/fa';
 import { CgUser } from 'react-icons/cg';
@@ -28,14 +28,66 @@ const Navbar = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [firstProductNameArray, setFirstProductNameArray] = useState([]);
 
+  const throttle = (callback, delay) => {
+    let shouldWait = false;
+    let lastArgs = null;
+
+    return (...args) => {
+      if (shouldWait) {
+        lastArgs = args;
+
+        return;
+      }
+
+      callback(...args);
+      shouldWait = true;
+      setTimeout(() => {
+        if (lastArgs === null) {
+          shouldWait = false;
+        } else {
+          shouldWait = false;
+          callback(...lastArgs);
+          lastArgs = null;
+        }
+      }, 1000);
+    }
+  }
+
+  // const requestApi = useMemo(() => {
+  //   return throttle(async (search) => {
+  //     console.log(search)
+  //     const url = 'http://localhost:4000/api/movies/search';
+  //     try {
+  //       const response = await axios.get(url, {
+  //         params: {
+  //           name: search,
+  //         }
+  //       });
+  //       console.log(response)
+  //       setSearchResults(response.data);
+
+  //       if (response.data.length > 0) {
+  //         const firstProductName = response.data[0].name;
+  //         console.log(response.data[0]._id)
+  //         setFirstProductNameArray([firstProductName]);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching search results:', error);
+  //     }
+  //   }, 1000);
+  // }, [])
+
+  // const handleInputChange = async (e) => {
+  //   setSearch(e.target.value);
+  //   requestApi(search);
+  // }
+
   useEffect(() => {
     if (!search) {
       setSearchResults([]);
     } else {
       (async () => {
         const url = 'http://localhost:4000/api/movies/search';
-        // const url = 'http://localhost:8080/search';
-
         try {
           const response = await axios.get(url, {
             params: {
@@ -56,6 +108,12 @@ const Navbar = () => {
       })();
     }
   }, [search]);
+
+  const handleResultClick = () => {
+    setSearch(''); // Reset giá trị input
+    setSearchResults([]); // Xóa kết quả tìm kiếm
+    // Chuyển đến trang ProductDetail với ID sản phẩm được chọn
+  };
 
   return (
     <>
@@ -89,21 +147,13 @@ const Navbar = () => {
               }}
                 className="flex flex-col rounded-lg overflow-hidden shadow-lg max-w-600px w-90 mt-1rem mx-auto">
 
-                {search && (
-                  <div className="max-h-75vh p-0 overflow-y-auto absolute top-[90px] z-5 bg-rose-200 rounded-lg">
-                    <div className="px-4 ">
-                      <ul className="border-t-1 border-gray-300 pt-2 pb-4 ">
-                        <SearchResults searchResults={searchResults} />
-                      </ul>
-                    </div>
-                  </div>
-                )}
                 <div className='w-[565px]'>
                   <Hint options={firstProductNameArray}>
                     <input
                       type="search"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
+                      // onChange={handleInputChange}
                       placeholder="Search your movies favorite"
                       className="font-medium placeholder:text-border text-sm w-11/12 h-12 bg-transparent border-none  px-2 text-black"
                     />
@@ -111,6 +161,16 @@ const Navbar = () => {
                 </div>
               </div>
             </form>
+
+            {search && (
+              <div className="max-h-75vh p-0 overflow-y-auto absolute top-[90px] z-5 bg-dryGray text-black rounded-lg">
+                <div className="px-4 ">
+                  <ul className="border-t-1 border-gray-300 pt-2 pb-4 ">
+                    <SearchResults searchResults={searchResults} handleResultClick={handleResultClick} />
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
           {/* Menu */}
           <div className="col-span-3 font-medium text-sm hidden x1:gap-14 2xl:gap-20 justify-between lg:flex xl:justify-end items-center">
