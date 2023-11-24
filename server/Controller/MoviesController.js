@@ -65,7 +65,7 @@ const getMovies = asyncHandler(async (req, res) => {
     };
     // load more movies
     const page = Number(req.query.pageNumber) || 1;
-    const limit = 12;
+    const limit = 15;
     const skip = (page - 1) * limit;
     //find movies by query, skip and limit
 
@@ -100,7 +100,7 @@ const getMoviesById = asyncHandler(async (req, res) => {
 });
 const getTopRatedMovies = asyncHandler(async (req, res) => {
   try {
-    const movies = await Movie.find({}).sort({ rate: -1 });
+    const movies = await Movie.find({}).sort({ numberOfRevies: -1, rate: -1 }).limit(12);;
     res.json(movies);
   } catch (error) {
     res.status(400).json({ message: error.message });

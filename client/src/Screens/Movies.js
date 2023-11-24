@@ -1,21 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Filter from '../Components/Home/Filter';
-import { Movies } from '../Data/DataMovies';
 import Movie from '../Components/Movie';
 import { TbPlayerTrackNext, TbPlayerTrackPrev } from 'react-icons/tb';
 import Layout from '../Layout/Layout';
-import { CgSpinner } from 'react-icons/cg';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-hot-toast';
 import { getAllMoviesAction } from '../Redux/Actions/MoviesActions';
 import Loader from '../Components/Notfications/Loader';
 import { RiMovie2Line } from 'react-icons/ri';
-import {
-  LanguageData,
-  RatesData,
-  TimesData,
-  YearData,
-} from '../Data/FlterData';
+import { LanguageData, RatesData, TimesData, YearData } from '../Data/FlterData';
 import { useParams } from 'react-router-dom';
 
 const MoviesPage = () => {
@@ -27,34 +20,35 @@ const MoviesPage = () => {
   const [rates, setRates] = useState(RatesData[0]);
   const [language, setLanguage] = useState(LanguageData[0]);
 
-  const sameClass =
-    'text-white py-2 px-4 rounded font-semibold border-2 border-subMain hover:border-subMain ';
-
   // all movies
   const { isLoading, isError, movies, pages, page } = useSelector(
     (state) => state.getAllMovies
   );
-  //get all categories
+  // get all categories
   const { categories } = useSelector((state) => state.categoryGetAll);
 
   // queries
+
   const queries = useMemo(() => {
     const query = {
-      category: category?.title === 'All categories' ? '' : category?.title,
+      category: category?.title === 'All Categories' ? '' : category?.title,
       time: times?.title.replace(/\D/g, ''),
-      language: language?.title === 'Sort By languages' ? '' : language?.title,
+      language: language?.title === 'Sort By Language' ? '' : language?.title,
       rate: rates?.title.replace(/\D/g, ''),
       year: year?.title.replace(/\D/g, ''),
       search: search ? search : '',
     };
+    console.log(query.category)
     return query;
   }, [category, times, language, rates, year, search]);
-  // useEffect
+
+
+  // useEffect to load movies when queries change
   useEffect(() => {
     if (isError) {
       toast.error(isError);
     }
-    //  get all movies
+    // get all movies
     dispatch(getAllMoviesAction(queries));
   }, [dispatch, isError, queries]);
 
@@ -74,6 +68,7 @@ const MoviesPage = () => {
       })
     );
   };
+
   const datas = {
     categories: categories,
     category: category,
@@ -87,7 +82,6 @@ const MoviesPage = () => {
     year: year,
     setYear: setYear,
   };
-  console.log(search);
 
   return (
     <Layout>
@@ -101,7 +95,7 @@ const MoviesPage = () => {
           {''} item Found {search && `for "${search}"`}
         </p>
         {isLoading ? (
-          <div className={sameClass}>
+          <div className="text-white py-2 px-4 rounded font-semibold border-2 border-subMain hover:border-subMain ">
             <Loader />
           </div>
         ) : movies?.length > 0 ? (
@@ -117,14 +111,14 @@ const MoviesPage = () => {
               <button
                 onClick={prevpage}
                 disabled={page === 1}
-                className={sameClass}
+                className="text-white py-2 px-4 rounded font-semibold border-2 border-subMain hover:border-subMain "
               >
                 <TbPlayerTrackPrev className="text-xl" />
               </button>
               <button
                 onClick={nextpage}
                 disabled={page === pages}
-                className={sameClass}
+                className="text-white py-2 px-4 rounded font-semibold border-2 border-subMain hover:border-subMain "
               >
                 <TbPlayerTrackNext className="text-xl" />
               </button>
@@ -140,8 +134,6 @@ const MoviesPage = () => {
             </p>
           </div>
         )}
-
-        {/* Loading more  */}
       </div>
     </Layout>
   );

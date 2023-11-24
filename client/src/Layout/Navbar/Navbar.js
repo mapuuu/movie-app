@@ -23,6 +23,7 @@ const Navbar = () => {
     } else {
       navigate(`/movies`);
     }
+    setSearch(''); // Xóa giá trị của input
   };
 
   const [searchResults, setSearchResults] = useState([]);

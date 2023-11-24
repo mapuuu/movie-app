@@ -79,8 +79,7 @@ const Filter = (props) => {
                   <Listbox.Option
                     key={i}
                     className={({ active }) =>
-                      `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                        active ? 'bg-subMain text-white' : 'text-main'
+                      `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-subMain text-white' : 'text-main'
                       }`
                     }
                     value={iterm}
@@ -88,9 +87,8 @@ const Filter = (props) => {
                     {({ selected }) => (
                       <>
                         <span
-                          className={`block truncated ${
-                            selected ? 'font-semibold' : 'font-normal'
-                          }`}
+                          className={`block truncated ${selected ? 'font-semibold' : 'font-normal'
+                            }`}
                         >
                           {iterm.title}
                         </span>

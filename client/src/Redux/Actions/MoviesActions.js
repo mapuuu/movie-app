@@ -14,25 +14,25 @@ export const getAllMoviesAction =
     search = '',
     pageNumber = '',
   }) =>
-  async (dispatch) => {
-    try {
-      dispatch({
-        type: moviesContants.MOVIES_LIST_REQUEST,
-      });
-      const response = await moviesAPI.getAllMoviesService(
-        category,
-        time,
-        language,
-        rate,
-        year,
-        search,
-        pageNumber
-      );
-      dispatch({ type: moviesContants.MOVIES_LIST_SUCCESS, payload: response });
-    } catch (error) {
-      ErrorsAction(error, dispatch, moviesContants.MOVIES_LIST_FAIL);
-    }
-  };
+    async (dispatch) => {
+      try {
+        dispatch({
+          type: moviesContants.MOVIES_LIST_REQUEST,
+        });
+        const response = await moviesAPI.getAllMoviesService(
+          category,
+          time,
+          language,
+          rate,
+          year,
+          search,
+          pageNumber
+        );
+        dispatch({ type: moviesContants.MOVIES_LIST_SUCCESS, payload: response });
+      } catch (error) {
+        ErrorsAction(error, dispatch, moviesContants.MOVIES_LIST_FAIL);
+      }
+    };
 
 // get random movies action
 export const getRandomMoviesAction = () => async (dispatch) => {
@@ -76,25 +76,25 @@ export const getTopRatedMovieAction = () => async (dispatch) => {
 
 export const reviewMovieAction =
   ({ id, review }) =>
-  async (dispatch, getState) => {
-    try {
-      dispatch({ type: moviesContants.CREATE_REVIEW_REQUEST });
-      const response = await moviesAPI.reviewMovieService(
-        tokenProtection(getState),
-        id,
-        review
-      );
-      dispatch({
-        type: moviesContants.CREATE_REVIEW_SUCCESS,
-        payload: response,
-      });
-      toast.success('Review add successfully');
-      dispatch({ type: moviesContants.CREATE_REVIEW_RESET });
-      dispatch(getMovieByMovieIdAction(id));
-    } catch (error) {
-      ErrorsAction(error, dispatch, moviesContants.CREATE_REVIEW_FAIL);
-    }
-  };
+    async (dispatch, getState) => {
+      try {
+        dispatch({ type: moviesContants.CREATE_REVIEW_REQUEST });
+        const response = await moviesAPI.reviewMovieService(
+          tokenProtection(getState),
+          id,
+          review
+        );
+        dispatch({
+          type: moviesContants.CREATE_REVIEW_SUCCESS,
+          payload: response,
+        });
+        toast.success('Review add successfully');
+        dispatch({ type: moviesContants.CREATE_REVIEW_RESET });
+        dispatch(getMovieByMovieIdAction(id));
+      } catch (error) {
+        ErrorsAction(error, dispatch, moviesContants.CREATE_REVIEW_FAIL);
+      }
+    };
 
 // create movie action
 export const createMovieAction = (movie) => async (dispatch, getState) => {
